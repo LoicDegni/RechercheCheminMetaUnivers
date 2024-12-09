@@ -12,7 +12,7 @@ bool operator==(const Coordonnees& c1, const Coordonnees& c2)
 
 bool operator <(const Coordonnees& c1, const Coordonnees& c2) 
 {
-    return ((c1.x + c1.y) < (c2.x + c2.y))? true: false; 
+    return (c1.x < c2.x)? true:((c2.x < c1.x)? false: (c1.y < c2.y) );
 }
 
 ostream& operator <<(ostream& os,const Coordonnees& c) 

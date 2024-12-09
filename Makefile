@@ -1,5 +1,5 @@
 OPTIONS = -O2 -Wall -Wextra -std=c++17    # pour optimiser
-OBJ: tp3.o univers.o coordonnees.o tp3
+OBJ = tp3.o univers.o coordonnees.o tp3
 
 all: tp3
 
@@ -16,5 +16,5 @@ coordonnees.o: coordonnees.cpp
 	g++ ${OPTIONS} -c coordonnees.cpp
 
 clean:
-	rm -rf ${OBJ}
+	rm -rf $(OBJ)
 

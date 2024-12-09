@@ -159,7 +159,7 @@ void Graphe<S>::afficherCellules() const
     {
         cout << sName<<" ";
     }
-    cout << "\n" << endl;
+    cout << sommets.size() <<  "\n" << endl;
 }
 
 

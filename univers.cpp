@@ -32,9 +32,10 @@ istream& operator >> (istream& is, Univers& univers) {
 	return is;
 }
 
-ostream& operator <<(ostream& os, Univers& univers) {
+ostream& operator <<(ostream& os, Univers& univers) { 
     for(const auto& [couleur,cellulec]: univers.cellules){
         cout << "couleur: " << couleur << " ";
         cellulec.afficherCellules();
     }
+    return os;
 }
