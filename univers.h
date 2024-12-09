@@ -11,21 +11,22 @@
 #include "coordonnees.h"
 using namespace std;
 
-template <class C>
+
 class Univers
 {
 	unsigned int N; 	// Nombre de ligne et nombre de colonnes
-	unsigned int Co; 	// Nombre de couleur
+	unsigned int C; 	// Nombre de couleur
 
-    map< int, Graphe<C>> cellules;
+    map< int, Graphe<Coordonnees> > cellules;
 	// TODO : Complétez avec les attributs nécessaires pour représenter l'univers
 
 public:
 	Univers()  {}
 	~Univers() {}
 
-    void ajouterCellule(const int, const C&);
+    void ajouterCellule(const int, const Coordonnees&);
 	void plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsigned int couleur_depart, unsigned int x_destination, unsigned int y_destination);
-	friend std::istream& operator >> (std::istream& is, Univers& recette);
+	friend istream& operator >> (istream& is, Univers& univers);
+    friend ostream& operator << (ostream& os, Univers& univers);
 };
 

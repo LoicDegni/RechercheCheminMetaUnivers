@@ -26,6 +26,7 @@ class Graphe{
     void parcoursRechercheProfondeur(const S& s) const;
     void parcoursRechercheLargueur(const S& s, bool = false) const;
     void extraireComposantesConnexes() const;
+    void afficherCellules() const;
   private:
     struct Sommet
     {
@@ -150,6 +151,17 @@ void Graphe<S>::extraireComposantesConnexes() const
     }
     cout <<"}\n";
 }
+
+template <class S>
+void Graphe<S>::afficherCellules() const
+{
+    for(const auto& [sName, current]: sommets)
+    {
+        cout << sName<<" ";
+    }
+    cout << "\n" << endl;
+}
+
 
 template <class S>
 void Graphe<S>::reinitVisited() const
