@@ -15,13 +15,14 @@
 using namespace std;
 
 // Le type S est le type utilisé pour identifier les sommets
-template <class S>
+template <class S,class A>
 class Graphe{
 
 private:
     struct Sommet
     {
-        set<S> voisins; // ensemble des sommets accessibles via les arêtes sortantes du sommet.
+        map<S,A> voisins;
+        //set<S> voisins; // ensemble des sommets accessibles via les arêtes sortantes du sommet.
                         // Cela est légèrement différent de la page 128 des notes de cours.
                         // C'est voulu, car ici les arêtes ne sont pas étiquetées par un poids (ex: distance).
                         // Pour attacher une étiquette, il suffirait de modifier pour : map<S, A> sortants;
@@ -35,8 +36,8 @@ private:
 public:
     // Interface public pour créer le graphe.
     void ajouterSommet(const S& s);
-    void ajouterAreteOrientee(const S& s1, const S& s2);
-    void ajouterAreteNonOrientee(const S& s1, const S& s2);
+    void ajouterAreteOrientee(const S& s1, const S& s2, int p);
+    void ajouterAreteNonOrientee(const S& s1, const S& s2, int p);
 
     void parcoursRechercheProfondeur(const S& s) const;
     void parcoursRechercheLargueur(const S& s, bool = false) const;
@@ -44,32 +45,39 @@ public:
     void afficherCellules() const;
     void afficherVoisin(const S&) const;
 
+    typename map<S, Sommet>::iterator begin();
+    typename map<S, Sommet>::const_iterator begin() const;
+    typename map<S, Sommet>::iterator end();
+    typename map<S, Sommet>::const_iterator end() const;
+
+
     Sommet& operator[](const S& s);
     const Sommet& operator[](const S& s) const;
     friend class Univers;
 };
 
-template <class S>
-void Graphe<S>::ajouterSommet(const S& s){
+template <class S, class A>
+void Graphe<S,A>::ajouterSommet(const S& s){
     sommets[s]; // initialise le sommet par defaut
 }
 
-template <class S>
-void Graphe<S>::ajouterAreteNonOrientee(const S& s1, const S& s2){
-    ajouterAreteOrientee(s1,s2);
-    ajouterAreteOrientee(s2,s1);
+template <class S, class A>
+void Graphe<S, A>::ajouterAreteNonOrientee(const S& s1, const S& s2, int p){
+    ajouterAreteOrientee(s1,s2, p);
+    ajouterAreteOrientee(s2,s1,p);
     // Doit ajouter les 2 arêtes orientées : s1->s2 et s2->s1;
 }
 
-template <class S>
-void Graphe<S>::ajouterAreteOrientee(const S& s1, const S& s2){
+template <class S, class A>
+void Graphe<S,A>::ajouterAreteOrientee(const S& s1, const S& s2, int p){
     //si ponderation sur arete: somets[s1].voisin[s2] = voisin[ponderation]
-    sommets[s1].voisins.insert(s2); //va chercher dans l'ebre le s1. Quand la trouver, va le mettre
+    sommets[s1].voisin[s2] = p;
+    //sommets[s1].voisins.insert(s2); //va chercher dans l'ebre le s1. Quand la trouver, va le mettre
     // Doit uniquement ajouter s1->s2.
 }
 
-template <class S>
-void Graphe<S>::parcoursRechercheProfondeur(const S& s) const{
+template <class S, class A>
+void Graphe<S,A>::parcoursRechercheProfondeur(const S& s) const{
     reinitVisited();
 
     stack<S> awaiting;
@@ -99,8 +107,8 @@ void Graphe<S>::parcoursRechercheProfondeur(const S& s) const{
     cout << "}\n";
 }
 
-template <class S>
-void Graphe<S>::parcoursRechercheLargueur(const S& s, bool component) const{
+template <class S, class A>
+void Graphe<S,A>::parcoursRechercheLargueur(const S& s, bool component) const{
     if(!component)
     {
         reinitVisited(); // quand tu fais le parcours connexe tu ne veux pas changer les noeud deja vue pour composantes connexes.
@@ -138,8 +146,8 @@ void Graphe<S>::parcoursRechercheLargueur(const S& s, bool component) const{
     cout << (component ? "}" : "\n");
 }
 
-template <class S>
-void Graphe<S>::extraireComposantesConnexes() const
+template <class S, class A>
+void Graphe<S,A>::extraireComposantesConnexes() const
 {
     reinitVisited();
 
@@ -160,8 +168,8 @@ void Graphe<S>::extraireComposantesConnexes() const
     cout <<"}\n";
 }
 
-template <class S>
-void Graphe<S>::afficherCellules() const
+template <class S, class A>
+void Graphe<S,A>::afficherCellules() const
 {
     for(const auto& [sName, current]: sommets)
     {
@@ -170,16 +178,36 @@ void Graphe<S>::afficherCellules() const
     cout << sommets.size() <<  "\n" << endl;
 }
 
-template<class S>
-void Graphe<S>::afficherVoisin(const S& s) const
+template<class S, class A>
+void Graphe<S,A>::afficherVoisin(const S& s) const
 {
     for( auto const& current: sommets.at(s).voisins)
         cout << current << " ";
     cout << "\n" << endl;
 }
 
-template <class S>
-void Graphe<S>::reinitVisited() const
+template<class S, class A>
+typename map<S,typename Graphe<S, A>::Sommet>::iterator begin() {
+    return sommets.begin();
+}
+
+template<class S, class A>    
+typename map<S, typename Graphe<S, A>:: Sommet>::const_iterator begin() const {
+    return sommets.begin();
+}
+
+template<class S, class A>
+typename map<S, typename Graphe<S,A>:: Sommet>::iterator end() {
+    return sommets.end();
+}
+
+template<class S, class A>
+typename map<S, typename Graphe<S,A>:: Sommet>::const_iterator end() const {
+    return sommets.end();
+}
+
+template <class S, class A>
+void Graphe<S,A>::reinitVisited() const
 {
     for(const auto& [_,current]: sommets)
         current.visited = false;
