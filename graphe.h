@@ -17,7 +17,22 @@ using namespace std;
 // Le type S est le type utilisé pour identifier les sommets
 template <class S>
 class Graphe{
-  public:
+
+private:
+    struct Sommet
+    {
+        set<S> voisins; // ensemble des sommets accessibles via les arêtes sortantes du sommet.
+                        // Cela est légèrement différent de la page 128 des notes de cours.
+                        // C'est voulu, car ici les arêtes ne sont pas étiquetées par un poids (ex: distance).
+                        // Pour attacher une étiquette, il suffirait de modifier pour : map<S, A> sortants;
+        mutable bool visited = false; // mutable veut dit que je peux manipuler meme si const. on a le droit de modifier visited. meme si ref const
+        friend class Univers;
+    };
+
+    map<S, Sommet> sommets; // identification --> sommet
+    void reinitVisited() const;  
+
+public:
     // Interface public pour créer le graphe.
     void ajouterSommet(const S& s);
     void ajouterAreteOrientee(const S& s1, const S& s2);
@@ -27,18 +42,11 @@ class Graphe{
     void parcoursRechercheLargueur(const S& s, bool = false) const;
     void extraireComposantesConnexes() const;
     void afficherCellules() const;
-  private:
-    struct Sommet
-    {
-        set<S> voisins; // ensemble des sommets accessibles via les arêtes sortantes du sommet.
-                        // Cela est légèrement différent de la page 128 des notes de cours.
-                        // C'est voulu, car ici les arêtes ne sont pas étiquetées par un poids (ex: distance).
-                        // Pour attacher une étiquette, il suffirait de modifier pour : map<S, A> sortants;
-        mutable bool visited = false; // mutable veut dit que je peux manipuler meme si const. on a le droit de modifier visited. meme si ref const
-    };
+    void afficherVoisin(const S&) const;
 
-    map<S, Sommet> sommets; // identification --> sommet
-    void reinitVisited() const;
+    Sommet& operator[](const S& s);
+    const Sommet& operator[](const S& s) const;
+    friend class Univers;
 };
 
 template <class S>
@@ -162,6 +170,13 @@ void Graphe<S>::afficherCellules() const
     cout << sommets.size() <<  "\n" << endl;
 }
 
+template<class S>
+void Graphe<S>::afficherVoisin(const S& s) const
+{
+    for( auto const& current: sommets.at(s).voisins)
+        cout << current << " ";
+    cout << "\n" << endl;
+}
 
 template <class S>
 void Graphe<S>::reinitVisited() const
@@ -169,5 +184,6 @@ void Graphe<S>::reinitVisited() const
     for(const auto& [_,current]: sommets)
         current.visited = false;
 }
+
 #endif
 

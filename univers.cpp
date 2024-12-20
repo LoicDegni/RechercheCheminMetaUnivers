@@ -7,8 +7,11 @@ void Univers::ajouterCellule(int couleur, const Coordonnees& c) {
 }
 
 void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsigned int couleur_depart, unsigned int x_destination, unsigned int y_destination) {
-    cerr << "TODO : calculer le plus court chemin depuis (" << x_depart << ", " << y_depart << ") avec la couleur " << couleur_depart << " vers (" << x_destination << ", " << y_destination << ")" << std::endl;
-		// TODO...
+}
+
+bool Univers::estAccessible(int couleurUnivers, const Coordonnees& c)
+{
+    return couleurUnivers != c.c;
 }
 
 
@@ -19,18 +22,51 @@ istream& operator >> (istream& is, Univers& univers) {
 	assert(univers.N > 0);
 	assert(univers.C > 0);
 
+    unsigned int couleur, id;
+    unordered_map<int, Coordonnees> entree;
 	for(unsigned int y = 0; y<univers.N; y++) {
 		for(unsigned int x = 0; x<univers.N; x++) {
-			unsigned int couleur;
-            Coordonnees cellule(x,y);
 			is >> couleur;
+            id = (x + y*univers.N);
+            Coordonnees cellule(x,y, couleur, id);
+            entree[id] = cellule;
             univers.ajouterCellule(couleur,cellule);
-			//cerr << "TODO : considérer la cellule (" << x << ", " << y << ") est de couleur " << couleur << endl;
-			// TODO : enregistrer dans une structure de donnée.
 		}
 	}
+    unsigned int nbElements = univers.N * univers.N;
+
+    for(unsigned int a = 0; a < univers.C; a++){
+        for(unsigned int i = 0; i < nbElements; i++){
+            //Verifie si on est pas sur derniere ligne
+            if(nbElements - i > univers.N){
+                //cout << entree.at(i) << endl;
+                if(univers.estAccessible(a, entree.at(i + univers.N) ) ){
+                    univers[a].ajouterAreteOrientee(entree.at(i), entree.at(i+ univers.N));
+                }
+            }
+            //Verifie si on est pas sur premiere ligne
+            if(i > univers.N){
+                if(univers.estAccessible(a, entree.at(i - univers.N) )){
+                    univers[a].ajouterAreteOrientee(entree.at(i), entree.at(i - univers.N));
+                }
+            }
+            //Verifie on est pas a la premiere case d'une ligne
+            if(i % univers.N > 0){
+                if(univers.estAccessible(a, entree.at(i-1))){
+                    univers[a].ajouterAreteOrientee(entree.at(i), entree.at(i -1));
+                }
+            }
+            //verifie si on est pas a la derniere case d'une ligne
+            if((i + 1)% univers.N > 0){
+                if(univers.estAccessible(a, entree.at(i + 1))){
+                    univers[a].ajouterAreteOrientee(entree.at(i), entree.at(i+1));
+                }
+            }
+        }
+    }
 	return is;
 }
+
 
 ostream& operator <<(ostream& os, Univers& univers) { 
     for(const auto& [couleur,cellulec]: univers.cellules){
@@ -39,3 +75,4 @@ ostream& operator <<(ostream& os, Univers& univers) {
     }
     return os;
 }
+

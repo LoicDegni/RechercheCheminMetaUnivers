@@ -14,7 +14,7 @@ int main(int argc, char const *argv[])
 	Univers univers;
 	entree >> univers;
 
-    cout << univers << endl;
+    //cout << univers << endl;
 
 
 	//unsigned int x_depart = atoi(argv[2]);

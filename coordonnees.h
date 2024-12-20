@@ -10,15 +10,20 @@ using namespace std;
 
 class Coordonnees {
   private:
+  int id;
   int x;
   int y;
+  int c;
   friend bool operator==(const Coordonnees&, const Coordonnees&);
   friend bool operator <(const Coordonnees&, const Coordonnees&);
   friend ostream& operator <<(ostream&,const Coordonnees&);
 
   public:
-    Coordonnees(int _x, int _y): x(_x), y(_y){};
+    Coordonnees(){}
+    Coordonnees(int _x, int _y, int _c, int _id): id(_id),  x(_x), y(_y), c(_c){};
     ~Coordonnees(){};
+    
+    friend class Univers;
 };
 
 
