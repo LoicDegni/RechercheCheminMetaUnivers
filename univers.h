@@ -7,48 +7,77 @@
 #include <cstdlib>
 #include <cassert>
 #include <fstream>
+#include <functional>
 #include "graphe.h"
 #include "coordonnees.h"
+#include "monceau.h"
 using namespace std;
-
 
 class Univers
 {
-    struct agent_state{
-        vector<char> chemin;
+    unsigned int N; // Nombre de ligne et nombre de colonnes
+    unsigned int C; // Nombre de couleur
+    unsigned int N_total;
+
+    struct Arete
+    {
+        Arete(){};
+        //Arete(const Arete& autre): coordonnees(autre.coordonnees), parent(autre.parent), distance(autre.distance), univers(autre.univers){};
+        Arete(Coordonnees _c, unsigned int _d, unsigned int _u, unsigned int _nb): coordonnees(_c), distance(_d), univers(_u), identifiant(_c.id + (_nb * _c.u)){};
+        Arete(Coordonnees _c, int _p, unsigned int _d, unsigned int _u, unsigned int _nb) : coordonnees(_c), parent(_p), distance(_d), univers(_u) 
+        {
+            identifiant = _c.id + (_nb * _u);
+        };
+
+        Coordonnees coordonnees;
+        int parent;
+        unsigned int distance;
+        unsigned int univers;
+        unsigned int identifiant;
+
+        friend ostream &operator<<(ostream &os, const Arete &arete)
+        {
+            cout << arete.coordonnees << "\n" << endl;
+            return os;
+        }
+        friend bool operator<(const Arete &a1, const Arete &a2)
+        {
+            return (a1.distance < a2.distance);
+        }
+    };
+
+    struct agent_state
+    {
+        unordered_map<unsigned int, Arete> chemin;
         unsigned int current_univers;
+
+        void insert(Arete &arete)
+        {
+            current_univers = arete.univers;
+            chemin[arete.identifiant] = arete;
+        }
     };
-    struct Arete{
-        Arete(Coordonnees _c, int _d, int _u): c(_c), distance(_d), univers(_u){};
-        Coordonnees c;
-        int distance;
-        int univers;
-    };
 
-	unsigned int N; 	// Nombre de ligne et nombre de colonnes
-	unsigned int C; 	// Nombre de couleur
-
-
-    unordered_map<int, Graphe<Coordonnees, int> > cellules; 
+    unordered_map<int, Graphe<Coordonnees, int>> cellules;
     unordered_map<int, Coordonnees> entree;
+
 public:
-	Univers()  {}
-	~Univers() {}
+    Univers() {}
+    ~Univers() {}
 
-    void Univers::ajouterCellule(const Coordonnees& c);
+    void ajouterCellule(const Coordonnees &c);
     void ajouterArete(const int a, const int b);
-	void plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsigned int couleur_depart, unsigned int x_destination, unsigned int y_destination);
-    bool estAccessible(int couleurUnivers, const Coordonnees&);
+    void plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsigned int couleur_depart, unsigned int x_destination, unsigned int y_destination);
+    bool estAccessible(unsigned int couleurUnivers, const Coordonnees &);
 
-    Graphe<Coordonnees, int>& operator[](Coordonnees a)
+    Graphe<Coordonnees, int> &operator[](Coordonnees a)
     {
         return cellules[a.c];
     }
-    Graphe<Coordonnees, int>& operator[](int b)
+    Graphe<Coordonnees, int> &operator[](int b)
     {
         return cellules[b];
     }
-	friend istream& operator >> (istream& is, Univers& univers);
-    friend ostream& operator << (ostream& os, Univers& univers);
+    friend istream &operator>>(istream &is, Univers &univers);
+    friend ostream &operator<<(ostream &os, Univers &univers);
 };
-

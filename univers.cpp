@@ -3,48 +3,100 @@
 
 
 void Univers::ajouterCellule(const Coordonnees& c) {
-    for(int i =0; i< N; i++)
-        cellules[i].ajouterSommet(c);
+    for(unsigned int i =0; i< N; i++){
+        Coordonnees temp = c;
+        temp.u = i;
+        cellules[i].ajouterSommet(temp);
+    }
 }
 
-void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsigned int couleur_depart, unsigned int x_destination, unsigned int y_destination) {
+void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsigned int couleur_depart, unsigned int x_destination, unsigned int y_destination) 
+{
+    bool trouve = false;
     agent_state state;
     state.current_univers = couleur_depart;
-    priority_queue<Arete> pq;
-    unordered_map<Coordonnees, int> distance;
+    Monceau<Arete> pq;
+    Arete current;
+    unordered_map<unsigned int,unsigned int> distance;
     Coordonnees c_temp = entree.at(x_depart + y_depart*N);
-    for(int i = 0; i< N; i++){
-        for(auto&  sommet: cellules[i]){
-            distance[sommet.first] = numeric_limits<int>::max();
+
+    for(unsigned int i = 0; i< C; i++){
+        for(auto&  sommet: cellules[i].sommets){
+            distance[sommet.first.id +(N_total*i)] = numeric_limits<int>::max();
         }
     }
-    distance[c_temp] = 0;
-    pq.push(Arete(c_temp,distance[c_temp], c_temp.c));
 
-    while(!pq.empty()){
-        Arete current = pq.top();
-        state.current_univers = current.univers;
-        for(int i = 0; i < N; i++){
-            if(i != current.univers) pq.push(Arete(current.c, 10, i));
+    distance[c_temp.id +(N_total*couleur_depart)] = 0;
+    Arete depart(c_temp, -1, distance[c_temp.id + (N_total*couleur_depart)], couleur_depart, N_total);
+    cout << couleur_depart << "\n" << depart.identifiant << "\n" << endl;
+    pq.inserer(depart);
+    //cout << pq.minimum().coordonnees.id << "\n" << endl;
+
+    while(!pq.estVide()){
+        current = pq.minimum();
+        //cout << pq.minimum().coordonnees.id << "  " << pq.minimum().univers << "\n" << endl;
+        //cout << "current parent: " << current.parent <<  " current : " << current.identifiant << " current coordonnees: " << current.coordonnees << " current univers: " << current.univers <<  " current distance: \n" << current.distance << endl;
+        state.insert(current);
+
+        if(current.coordonnees.c != state.current_univers) 
+        {
+            pq.inserer(Arete(current.coordonnees, current.identifiant, current.distance + 10 ,current.coordonnees.c, N_total));
+            distance[current.coordonnees.id + (N_total*current.coordonnees.c)] = current.distance + 10;
         }
-        pq.pop();
 
-        if(distance[current.c] == numeric_limits<int>::max()) break;
-        if(current.c.id == (x_destination + N*y_destination)) {
-            //Condition de sortie
+        pq.enleverMinimum();
+
+        if(distance[current.coordonnees.id +(N_total*current.univers)] == numeric_limits<int>::max()){
+            cout << "Il n'existe pas de chemin vers ce sommet.\n" << endl;
+            break;
+        }
+        if(current.coordonnees.id == (x_destination + N*y_destination)) {
+            trouve = true;
+            break;
         } 
 
         Graphe<Coordonnees,int> temp = cellules[state.current_univers];
-        for(const auto& sommet: temp.sommets[current.c].voisins){
-            if(sommet.second + current.distance < distance[sommet.first]){
-                distance[sommet.first] = sommet.second + current.distance;
-                pq.push(Arete(c_temp,distance[c_temp], c_temp.c));
+        for(const auto& sommet: temp.sommets[current.coordonnees].voisins){
+            if(sommet.second + current.distance < distance.at(sommet.first.id + (N_total*state.current_univers) ) ){
+                distance.at(sommet.first.id + (N_total*state.current_univers) ) = sommet.second + current.distance;
+                Arete add(sommet.first, current.identifiant, distance.at(sommet.first.id + (N_total*state.current_univers) ), state.current_univers, N_total );
+                pq.inserer(Arete(add));
             }
         }
     }
-}
+    if(trouve)
+    {
+        vector<char> chemin;
+        unsigned int distance_finale = state.chemin.at(current.identifiant).distance;
+        int enfant = state.chemin.at(current.identifiant).identifiant;
+        int precedant = state.chemin.at(enfant).parent;
+        
+        do{
+            if(state.chemin.at(enfant).distance - state.chemin.at(precedant).distance == 10){
+            chemin.push_back('c');
+            }else if(state.chemin.at(enfant).distance - state.chemin.at(precedant).distance == 1){
+            if(state.chemin.at(enfant).coordonnees.x < state.chemin.at(precedant).coordonnees.x){
+                chemin.push_back('d');
+            }else if(state.chemin.at(enfant).coordonnees.y < state.chemin.at(precedant).coordonnees.y){
+                chemin.push_back('h');
+            }else if(state.chemin.at(enfant).coordonnees.x > state.chemin.at(precedant).coordonnees.x){
+                chemin.push_back('g');
+            }else if(state.chemin.at(enfant).coordonnees.y > state.chemin.at(precedant).coordonnees.y){
+                chemin.push_back('b');
+            }
+        }
+        enfant = precedant;
+        precedant = state.chemin.at(precedant).parent;
+        }while(precedant != -1);
+        for (auto it = chemin.rbegin(); it != chemin.rend(); ++it) 
+            cout << *it << " ";
+        cout << distance_finale << "\n" << endl;
+    }
+} 
 
-bool Univers::estAccessible(int couleurUnivers, const Coordonnees& c)
+
+    
+bool Univers::estAccessible(unsigned int couleurUnivers, const Coordonnees& c)
 {
     return couleurUnivers != c.c;
 }
@@ -53,6 +105,7 @@ bool Univers::estAccessible(int couleurUnivers, const Coordonnees& c)
 istream& operator >> (istream& is, Univers& univers) {
 	is >> univers.N; 		// Nombre de ligne et de colonnes
 	is >> univers.C; 		// Nombre de couleurs
+    univers.N_total = univers.N * univers.N;
 
 	assert(univers.N > 0);
 	assert(univers.C > 0);
@@ -97,7 +150,6 @@ istream& operator >> (istream& is, Univers& univers) {
             }
         }
     }
-    //univers[1].afficherVoisin(entree.at(0));
 	return is;
 }
 

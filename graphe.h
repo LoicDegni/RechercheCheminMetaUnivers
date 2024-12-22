@@ -45,12 +45,6 @@ public:
     void afficherCellules() const;
     void afficherVoisin(const S&) const;
 
-    typename map<S, Sommet>::iterator begin();
-    typename map<S, Sommet>::const_iterator begin() const;
-    typename map<S, Sommet>::iterator end();
-    typename map<S, Sommet>::const_iterator end() const;
-
-
     Sommet& operator[](const S& s);
     const Sommet& operator[](const S& s) const;
     friend class Univers;
@@ -71,7 +65,7 @@ void Graphe<S, A>::ajouterAreteNonOrientee(const S& s1, const S& s2, int p){
 template <class S, class A>
 void Graphe<S,A>::ajouterAreteOrientee(const S& s1, const S& s2, int p){
     //si ponderation sur arete: somets[s1].voisin[s2] = voisin[ponderation]
-    sommets[s1].voisin[s2] = p;
+    sommets[s1].voisins[s2] = p;
     //sommets[s1].voisins.insert(s2); //va chercher dans l'ebre le s1. Quand la trouver, va le mettre
     // Doit uniquement ajouter s1->s2.
 }
@@ -184,26 +178,6 @@ void Graphe<S,A>::afficherVoisin(const S& s) const
     for( auto const& current: sommets.at(s).voisins)
         cout << current << " ";
     cout << "\n" << endl;
-}
-
-template<class S, class A>
-typename map<S,typename Graphe<S, A>::Sommet>::iterator begin() {
-    return sommets.begin();
-}
-
-template<class S, class A>    
-typename map<S, typename Graphe<S, A>:: Sommet>::const_iterator begin() const {
-    return sommets.begin();
-}
-
-template<class S, class A>
-typename map<S, typename Graphe<S,A>:: Sommet>::iterator end() {
-    return sommets.end();
-}
-
-template<class S, class A>
-typename map<S, typename Graphe<S,A>:: Sommet>::const_iterator end() const {
-    return sommets.end();
 }
 
 template <class S, class A>
