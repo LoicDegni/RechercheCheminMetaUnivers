@@ -15,6 +15,7 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
     bool trouve = false;
     agent_state state;
     state.current_univers = couleur_depart;
+
     Monceau<Arete> pq;
     Arete current;
     unordered_map<unsigned int,unsigned int> distance;
@@ -27,7 +28,7 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
     }
 
     distance[c_temp.id +(N_total*couleur_depart)] = 0;
-    Arete depart(c_temp, -1, distance[c_temp.id + (N_total*couleur_depart)], couleur_depart, N_total);
+    Arete depart(c_temp, -1, 0, couleur_depart, N_total);
     pq.inserer(depart);
 
     while(!pq.estVide()){
@@ -53,9 +54,11 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
 
         Graphe<Coordonnees,int> temp = cellules[state.current_univers];
         for(const auto& sommet: temp.sommets[current.coordonnees].voisins){
-            if(sommet.second + current.distance < distance.at(sommet.first.id + (N_total*state.current_univers) ) ){
-                distance.at(sommet.first.id + (N_total*state.current_univers) ) = sommet.second + current.distance;
-                Arete add(sommet.first, current.identifiant, distance.at(sommet.first.id + (N_total*state.current_univers) ), state.current_univers, N_total );
+            unsigned int new_distance = sommet.second + current.distance;
+            unsigned int key = sommet.first.id + (N_total * state.current_univers);
+            if(new_distance < distance.at(key) ){
+                distance.at(key) = new_distance;
+                Arete add(sommet.first, current.identifiant, new_distance, state.current_univers, N_total );
                 pq.inserer(Arete(add));
             }
         }
