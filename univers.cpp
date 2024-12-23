@@ -3,7 +3,7 @@
 
 
 void Univers::ajouterCellule(const Coordonnees& c) {
-    for(unsigned int i =0; i< N; i++){
+    for(unsigned int i =0; i< C; i++){
         Coordonnees temp = c;
         temp.u = i;
         cellules[i].ajouterSommet(temp);
@@ -28,14 +28,10 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
 
     distance[c_temp.id +(N_total*couleur_depart)] = 0;
     Arete depart(c_temp, -1, distance[c_temp.id + (N_total*couleur_depart)], couleur_depart, N_total);
-    cout << couleur_depart << "\n" << depart.identifiant << "\n" << endl;
     pq.inserer(depart);
-    //cout << pq.minimum().coordonnees.id << "\n" << endl;
 
     while(!pq.estVide()){
         current = pq.minimum();
-        //cout << pq.minimum().coordonnees.id << "  " << pq.minimum().univers << "\n" << endl;
-        //cout << "current parent: " << current.parent <<  " current : " << current.identifiant << " current coordonnees: " << current.coordonnees << " current univers: " << current.univers <<  " current distance: \n" << current.distance << endl;
         state.insert(current);
 
         if(current.coordonnees.c != state.current_univers) 
@@ -88,6 +84,7 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
         enfant = precedant;
         precedant = state.chemin.at(precedant).parent;
         }while(precedant != -1);
+
         for (auto it = chemin.rbegin(); it != chemin.rend(); ++it) 
             cout << *it << " ";
         cout << distance_finale << "\n" << endl;
@@ -120,12 +117,10 @@ istream& operator >> (istream& is, Univers& univers) {
             univers.entree[id] = cellule;
 		}
 	}
-    unsigned int nbElements = univers.N * univers.N;
-
     for(unsigned int a = 0; a < univers.C; a++){
-        for(unsigned int i = 0; i < nbElements; i++){
+        for(unsigned int i = 0; i < univers.N_total; i++){
             //Verifie si on est pas sur derniere ligne
-            if(nbElements - i > univers.N){
+            if(univers.N_total - i > univers.N){
                 if(univers.estAccessible(a, univers.entree.at(i + univers.N) ) ){
                     univers[a].ajouterAreteOrientee(univers.entree.at(i), univers.entree.at(i+ univers.N), 1);
                 }
@@ -151,14 +146,5 @@ istream& operator >> (istream& is, Univers& univers) {
         }
     }
 	return is;
-}
-
-
-ostream& operator <<(ostream& os, Univers& univers) { 
-    for(const auto& [couleur,cellulec]: univers.cellules){
-        cout << "couleur: " << couleur << " ";
-        cellulec.afficherCellules();
-    }
-    return os;
 }
 

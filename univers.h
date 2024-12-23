@@ -22,7 +22,6 @@ class Univers
     struct Arete
     {
         Arete(){};
-        //Arete(const Arete& autre): coordonnees(autre.coordonnees), parent(autre.parent), distance(autre.distance), univers(autre.univers){};
         Arete(Coordonnees _c, unsigned int _d, unsigned int _u, unsigned int _nb): coordonnees(_c), distance(_d), univers(_u), identifiant(_c.id + (_nb * _c.u)){};
         Arete(Coordonnees _c, int _p, unsigned int _d, unsigned int _u, unsigned int _nb) : coordonnees(_c), parent(_p), distance(_d), univers(_u) 
         {
@@ -66,7 +65,6 @@ public:
     ~Univers() {}
 
     void ajouterCellule(const Coordonnees &c);
-    void ajouterArete(const int a, const int b);
     void plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsigned int couleur_depart, unsigned int x_destination, unsigned int y_destination);
     bool estAccessible(unsigned int couleurUnivers, const Coordonnees &);
 
@@ -79,5 +77,4 @@ public:
         return cellules[b];
     }
     friend istream &operator>>(istream &is, Univers &univers);
-    friend ostream &operator<<(ostream &os, Univers &univers);
 };

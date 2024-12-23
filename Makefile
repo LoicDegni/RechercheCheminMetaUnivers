@@ -1,4 +1,4 @@
-OPTIONS = -O2 -Wall -Wextra -std=c++17    # pour optimiser
+OPTIONS = -O2 -Wall -Wextra -std=c++11    # pour optimiser
 OBJ = tp3.o univers.o coordonnees.o tp3
 
 all: tp3

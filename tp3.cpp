@@ -14,9 +14,6 @@ int main(int argc, char const *argv[])
 	Univers univers;
 	entree >> univers;
 
-    //cout << univers << endl;
-
-
 	unsigned int x_depart = atoi(argv[2]);
 	unsigned int y_depart = atoi(argv[3]);
 	unsigned int couleur_depart = atoi(argv[4]);
