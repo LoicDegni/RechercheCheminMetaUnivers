@@ -8,6 +8,8 @@
 #include <cassert>
 #include <fstream>
 #include <functional>
+#include <unordered_map>
+#include <limits>
 #include "graphe.h"
 #include "coordonnees.h"
 #include "monceau.h"

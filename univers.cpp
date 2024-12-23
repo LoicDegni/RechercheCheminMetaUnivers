@@ -72,11 +72,11 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
             chemin.push_back('c');
             }else if(state.chemin.at(enfant).distance - state.chemin.at(precedant).distance == 1){
             if(state.chemin.at(enfant).coordonnees.x < state.chemin.at(precedant).coordonnees.x){
-                chemin.push_back('d');
+                chemin.push_back('g');
             }else if(state.chemin.at(enfant).coordonnees.y < state.chemin.at(precedant).coordonnees.y){
                 chemin.push_back('h');
             }else if(state.chemin.at(enfant).coordonnees.x > state.chemin.at(precedant).coordonnees.x){
-                chemin.push_back('g');
+                chemin.push_back('d');
             }else if(state.chemin.at(enfant).coordonnees.y > state.chemin.at(precedant).coordonnees.y){
                 chemin.push_back('b');
             }
