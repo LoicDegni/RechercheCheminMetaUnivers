@@ -34,13 +34,16 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
     while(!pq.estVide()){
         current = pq.minimum();
         state.current_univers = current.univers;
-        cout << current.parent << endl;
         state.insert(current);
 
         if(current.coordonnees.c != state.current_univers) 
         {
+            unsigned int new_distance = current.distance + 10;
+            unsigned int key = current.coordonnees.id + (N_total*current.coordonnees.c);
+            if(new_distance < distance.at(key)){
             pq.inserer(Arete(current.coordonnees, current.identifiant, current.distance + 10 ,current.coordonnees.c, N_total));
             distance[current.coordonnees.id + (N_total*current.coordonnees.c)] = current.distance + 10;
+            }
         }
 
         pq.enleverMinimum();
@@ -68,7 +71,7 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
     {
         vector<char> chemin;
         unsigned int distance_finale = state.chemin.at(current.identifiant).distance;
-        int enfant = state.chemin.at(current.identifiant).identifiant;
+        int enfant = state.chemin.at(current.identifiant).parent;
         int precedant;
         do{
             precedant = state.chemin.at(enfant).parent;
@@ -85,13 +88,12 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
                 chemin.push_back('b');
                 }
             }
-            cout << precedant << "\n";
             enfant = precedant;
-        }while(state.chemin.at(precedant).identifiant != ((x_depart + y_depart*N) + (N_total*couleur_depart) ));
+        }while(state.chemin.at(enfant).parent != -1);
 
         for (auto it = chemin.rbegin(); it != chemin.rend(); ++it) 
             cout << *it << " ";
-        cout << distance_finale << "\n" << endl;
+        cout << distance_finale << endl;
     }
 } 
 
