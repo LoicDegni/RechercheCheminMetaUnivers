@@ -71,7 +71,7 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
     {
         vector<char> chemin;
         unsigned int distance_finale = state.chemin.at(current.identifiant).distance;
-        int enfant = state.chemin.at(current.identifiant).parent;
+        int enfant = state.chemin.at(current.identifiant).identifiant;
         int precedant;
         do{
             precedant = state.chemin.at(enfant).parent;
@@ -89,7 +89,7 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
                 }
             }
             enfant = precedant;
-        }while(state.chemin.at(enfant).parent != -1);
+        }while(state.chemin.at(precedant).parent != -1);
 
         for (auto it = chemin.rbegin(); it != chemin.rend(); ++it) 
             cout << *it << " ";
