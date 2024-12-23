@@ -33,6 +33,8 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
 
     while(!pq.estVide()){
         current = pq.minimum();
+        state.current_univers = current.univers;
+        cout << current.parent << endl;
         state.insert(current);
 
         if(current.coordonnees.c != state.current_univers) 
@@ -51,15 +53,14 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
             trouve = true;
             break;
         } 
-
         Graphe<Coordonnees,int> temp = cellules[state.current_univers];
+
         for(const auto& sommet: temp.sommets[current.coordonnees].voisins){
             unsigned int new_distance = sommet.second + current.distance;
             unsigned int key = sommet.first.id + (N_total * state.current_univers);
             if(new_distance < distance.at(key) ){
                 distance.at(key) = new_distance;
-                Arete add(sommet.first, current.identifiant, new_distance, state.current_univers, N_total );
-                pq.inserer(Arete(add));
+                pq.inserer(Arete(sommet.first, current.identifiant, new_distance, state.current_univers, N_total ));
             }
         }
     }
@@ -68,25 +69,25 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
         vector<char> chemin;
         unsigned int distance_finale = state.chemin.at(current.identifiant).distance;
         int enfant = state.chemin.at(current.identifiant).identifiant;
-        int precedant = state.chemin.at(enfant).parent;
-        
+        int precedant;
         do{
+            precedant = state.chemin.at(enfant).parent;
             if(state.chemin.at(enfant).distance - state.chemin.at(precedant).distance == 10){
             chemin.push_back('c');
             }else if(state.chemin.at(enfant).distance - state.chemin.at(precedant).distance == 1){
-            if(state.chemin.at(enfant).coordonnees.x < state.chemin.at(precedant).coordonnees.x){
+                if(state.chemin.at(enfant).coordonnees.x < state.chemin.at(precedant).coordonnees.x){
                 chemin.push_back('g');
-            }else if(state.chemin.at(enfant).coordonnees.y < state.chemin.at(precedant).coordonnees.y){
+                }else if(state.chemin.at(enfant).coordonnees.y < state.chemin.at(precedant).coordonnees.y){
                 chemin.push_back('h');
-            }else if(state.chemin.at(enfant).coordonnees.x > state.chemin.at(precedant).coordonnees.x){
+                }else if(state.chemin.at(enfant).coordonnees.x > state.chemin.at(precedant).coordonnees.x){
                 chemin.push_back('d');
-            }else if(state.chemin.at(enfant).coordonnees.y > state.chemin.at(precedant).coordonnees.y){
+                }else if(state.chemin.at(enfant).coordonnees.y > state.chemin.at(precedant).coordonnees.y){
                 chemin.push_back('b');
+                }
             }
-        }
-        enfant = precedant;
-        precedant = state.chemin.at(precedant).parent;
-        }while(precedant != -1);
+            cout << precedant << "\n";
+            enfant = precedant;
+        }while(state.chemin.at(precedant).identifiant != ((x_depart + y_depart*N) + (N_total*couleur_depart) ));
 
         for (auto it = chemin.rbegin(); it != chemin.rend(); ++it) 
             cout << *it << " ";

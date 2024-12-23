@@ -24,7 +24,6 @@ class Univers
     struct Arete
     {
         Arete(){};
-        Arete(Coordonnees _c, unsigned int _d, unsigned int _u, unsigned int _nb): coordonnees(_c), distance(_d), univers(_u), identifiant(_c.id + (_nb * _c.u)){};
         Arete(Coordonnees _c, int _p, unsigned int _d, unsigned int _u, unsigned int _nb) : coordonnees(_c), parent(_p), distance(_d), univers(_u) 
         {
             identifiant = _c.id + (_nb * _u);
