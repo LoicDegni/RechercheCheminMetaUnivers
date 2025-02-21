@@ -56,9 +56,7 @@ void Univers::plusCourtChemin(unsigned int x_depart, unsigned int y_depart, unsi
             trouve = true;
             break;
         } 
-        Graphe<Coordonnees,int> temp = cellules[state.current_univers];
-
-        for(const auto& sommet: temp.sommets[current.coordonnees].voisins){
+        for(const auto& sommet: cellules[state.current_univers].sommets[current.coordonnees].voisins){
             unsigned int new_distance = sommet.second + current.distance;
             unsigned int key = sommet.first.id + (N_total * state.current_univers);
             if(new_distance < distance.at(key) ){
